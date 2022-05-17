@@ -1,59 +1,71 @@
+from typing import Any
 import pygame
-import random
+from helper.constant import RES,BLACK,WHITE
+from helper.methods import generateArray
 
-# Defining some constants
-WHITE=(255,255,255)
-BLACK =(0,0,0)
-RES=(800,500)
+class MainGame:
+    gameexit: bool
+    values: list
+    flag: int
+    k: int
+    j: int
+    window: pygame.Surface
+    framerate: int 
 
- 
-
-#  Helper Methods
-def generateArray(n,min,max):
-    arr=[]
-    for i in range(n):
-        Y = random.randint(min,max)
-        arr.append(Y)
-    return arr
-
-
-gameexit = False
-values=generateArray(780,20,450)
-flag=k=j=0
-
-
-pygame.init()
-clock = pygame.time.Clock()
-window = pygame.display.set_mode(RES)
-window.fill(BLACK)
-
-
-# Main loop
-
-while not gameexit:
-    X=20
-    window.fill(BLACK)
-    for i in values:
-        if(X<780):
-            pygame.draw.line(window,WHITE,[X,20],[X,i])
-            X+=1
-        flag+=1
+    def __init__(self) -> None:
+        pygame.init()
+        self.flag = 0
+        self.k = 0
+        self.j = 0  
+        self.framerate = 30
+        self.clock = pygame.time.Clock()
+        self.window = pygame.display.set_mode(RES)
+        self.values= generateArray(780,20,450)
+        self.gameexit = False
+        self.window.fill(BLACK)
     
-    clock.tick(30)
+    def sort_values(self) -> None:
+        if self.k<len(self.values):
+            for self.j in range(len(self.values)-self.k-1):
+                if self.values[self.j]>self.values[self.j+1]:
+                    self.values[self.j],self.values[self.j+1] = self.values[self.j+1],self.values[self.j]
     
-    pygame.display.update()
+    def exit_on_press(self) -> None:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.gameexit = True
 
-    if k<len(values):
-        for j in range(len(values)-k-1):
-            if values[j]>values[j+1]:
-                values[j],values[j+1] = values[j+1],values[j]
-        
-    if j<len(values)-k-1:
-        k+=1
-        
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            gameexit = True
-    pygame.display.update()
+    def draw_lines(self) -> None:
+        X=20
+        for i in self.values:
+            if(X<780):
+                pygame.draw.line(self.window,WHITE,[X,20],[X,i])
+                X+=1
+            self.flag+=1
+    
+    def reset_sorting_cursor(self) -> None:
+        if self.j<len(self.values)-self.k-1:
+            self.k+=1
+            
+    
+    def mainLoop(self) -> None:
+        while not self.gameexit:
+            self.window.fill(BLACK)
+            self.draw_lines()
+            self.clock.tick(self.framerate)
+            pygame.display.update()
+            self.sort_values()      
+            self.reset_sorting_cursor()
+            self.exit_on_press()
+            pygame.display.flip()
 
-pygame.display.update()      
+        pygame.display.flip()
+    
+    def run(self) -> None:
+        self.mainLoop()
+
+def main() -> None:
+    mainGame = MainGame()
+    mainGame.run()
+
+main()
