@@ -1,4 +1,3 @@
-from typing import Any
 import pygame
 from helper.constant import RES,BLACK,WHITE
 from helper.methods import generateArray
@@ -10,20 +9,23 @@ class MainGame:
     k: int
     j: int
     window: pygame.Surface
-    framerate: int 
+    framerate: int
 
     def __init__(self) -> None:
-        pygame.init()
+        self.initialize_pygame()
         self.flag = 0
         self.k = 0
-        self.j = 0  
+        self.j = 0
         self.framerate = 30
-        self.clock = pygame.time.Clock()
-        self.window = pygame.display.set_mode(RES)
         self.values= generateArray(780,20,450)
         self.gameexit = False
         self.window.fill(BLACK)
     
+    def initialize_pygame(self) -> None:
+        pygame.init()
+        self.clock = pygame.time.Clock()
+        self.window = pygame.display.set_mode(RES)
+
     def sort_values(self) -> None:
         if self.k<len(self.values):
             for self.j in range(len(self.values)-self.k-1):
@@ -46,8 +48,7 @@ class MainGame:
     def reset_sorting_cursor(self) -> None:
         if self.j<len(self.values)-self.k-1:
             self.k+=1
-            
-    
+   
     def mainLoop(self) -> None:
         while not self.gameexit:
             self.window.fill(BLACK)
